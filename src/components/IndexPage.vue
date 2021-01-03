@@ -43,7 +43,7 @@ import fs from 'fs';
 import path from 'path';
 import {Watch} from "vue-property-decorator";
 import marked from "marked";
-import * as Buffer from "buffer";
+import {Buffer} from "buffer";
 
 const {dialog} = require('electron').remote
 const Store = require('electron-store');
@@ -113,8 +113,9 @@ export default class IndexPage extends Vue {
         let length = fs.readdirSync(folder).length
         let filename = `${String(length).padStart(3, '0')}_${file.name}`
 
-        let buffer: Buffer = new (Buffer as any).from(await file.arrayBuffer());
-        fs.writeFile(path.join(folder, filename), buffer, err => {
+        let arrayBuffer = await file.arrayBuffer();
+        let buffer = Buffer.from(arrayBuffer);
+        fs.writeFile(path.join(folder, filename), (buffer as any), err => {
             if (err) return console.log(err);
         })
 
