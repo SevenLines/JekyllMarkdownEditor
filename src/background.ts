@@ -18,8 +18,9 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
-    }
+      nodeIntegration: typeof process.env.ELECTRON_NODE_INTEGRATION == "boolean" ? process.env.ELECTRON_NODE_INTEGRATION : false,
+      webSecurity: false
+    },
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -62,6 +63,13 @@ app.on('ready', async () => {
   }
   createWindow()
 })
+
+app.whenReady().then(() => {
+  protocol.registerFileProtocol('file', (request, callback) => {
+    const pathname = decodeURI(request.url.replace('file:///', ''));
+    callback(pathname);
+  });
+});
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

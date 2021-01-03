@@ -49,7 +49,8 @@
         @Prop() uploadLocalFuncPath!: "";
         @Prop() uploadLocalFuncSubPath!: "";
         @Prop() customRenderFunction!: null;
-        @Prop() uploadFunc!: null;
+        @Prop() uploadFunc?: Function;
+        @Prop() previewRenderFunc?: Function;
 
         private mde?: EasyMDE;
 
@@ -70,11 +71,7 @@
             //     reader.onerror = error => reject(error);
             // });
 
-            // console.log(uploadImage)
-            let customRenderFunction = this.customRenderFunction
             let self = this;
-
-            console.log(this.uploadFunc)
 
             this.mde = new EasyMDE({
                 element: (this.$refs.editor as HTMLElement),
@@ -84,13 +81,17 @@
                 minHeight: this.minHeight,
                 imageAccept: "image/png,image/jpeg,image/gif,docx,xlsx",
                 async imageUploadFunction(file: any, onSuccess: any) {
-                    let data = await  self.uploadFunc(file);
-                    onSuccess(data.link);
+                    if (self.uploadFunc != null) {
+                        let data = await self.uploadFunc(file);
+                        onSuccess(data.link);
+                    }
                 },
                 previewRender: function(plainText: string) {
-                    let result: string = marked(plainText);
-                    if (customRenderFunction) {
-                        result = customRenderFunction(result);
+                    let result: string = "";
+                    if (self.previewRenderFunc != null) {
+                        result = self.previewRenderFunc(plainText);
+                    } else {
+                        result = marked(plainText);
                     }
                     return result; // Returns HTML from a custom parser
                 },

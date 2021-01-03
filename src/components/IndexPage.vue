@@ -30,6 +30,7 @@
             min-height="800px"
             v-model="text"
             :upload-func="onUpload"
+            :preview-render-func="previewRenderFunc"
         />
     </div>
 </template>
@@ -37,10 +38,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import MarkdownEditor from "./MarkdownEditor";
+import MarkdownEditor from "./MarkdownEditor.vue";
 import fs from 'fs';
 import path from 'path';
 import {Watch} from "vue-property-decorator";
+import marked from "marked";
+import * as Buffer from "buffer";
 
 const {dialog} = require('electron').remote
 const Store = require('electron-store');
@@ -110,7 +113,7 @@ export default class IndexPage extends Vue {
         let length = fs.readdirSync(folder).length
         let filename = `${String(length).padStart(3, '0')}_${file.name}`
 
-        let buffer = new Buffer.from(await file.arrayBuffer());
+        let buffer: Buffer = new (Buffer as any).from(await file.arrayBuffer());
         fs.writeFile(path.join(folder, filename), buffer, err => {
             if (err) return console.log(err);
         })
@@ -120,14 +123,20 @@ export default class IndexPage extends Vue {
         }
     }
 
+    previewRenderFunc(text: string) {
+        let dir = "file://" + path.join(this.openedFile, this.rootDir).replace(/\\/g, "/");
+        text = text.replace(/(!\[.*?\]\()(\/assets.*?)(\))/g, `$1${dir}$2$3`)
+        text = marked(text)
+        return text;
+    }
 
-    extractOptions(text) {
+    extractOptions(text: string) {
         let options = text.match(this.OPTIONS_REGEXP)
-        let dict = {}
+        let dict: any = {}
         if (options) {
-            options = options[1]
-            options = options.trim().split(/\r?\n/)
-            options.forEach(item => {
+            let match = options[1]
+            let match_splited = match.trim().split(/\r?\n/)
+            match_splited?.forEach(item => {
                 let m = item.match(/(\w+):\s?(.*)/m)
                 if (m) {
                     dict[m[1]] = m[2];
@@ -137,7 +146,7 @@ export default class IndexPage extends Vue {
         return dict
     }
 
-    replaceOptions(text, options) {
+    replaceOptions(text: string, options: any) {
         let optionsJoined = "";
         Object.keys(options).forEach(x => {
             optionsJoined += `${x}: ${options[x]}\n`
