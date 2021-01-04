@@ -110,6 +110,12 @@ export default class IndexPage extends Vue {
         let name = path.basename(this.openedFile, ext)
         let assets_folder = path.join('assets', name);
         let folder = path.join(this.openedFile, this.rootDir, assets_folder)
+
+
+        if (!fs.existsSync(folder)){
+            fs.mkdirSync(folder);
+        }
+
         let length = fs.readdirSync(folder).length
         let filename = `${String(length).padStart(3, '0')}_${file.name}`
 
