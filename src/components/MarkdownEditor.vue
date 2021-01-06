@@ -6,40 +6,6 @@
     import {Component, Prop, Vue, Watch} from "vue-property-decorator";
     import EasyMDE from 'easymde';
     import marked from 'marked'
-    // import imgur from 'imgur'
-    // imgur.setCredentials('madisontrash@gmail.com', 'i7m4g3u2r', '20b7d264ddbb26f');
-    //
-    // function uploadImage(file: File) {
-    //     var fd = new FormData();
-    //     fd.append("image", file);
-    //     // fd.append("album", "w0v0wdv");
-    //
-    //     let promise = fetch('https://api.imgur.com/3/image', {
-    //         method: 'POST',
-    //         headers: {
-    //             'authorization': 'Client-ID 20b7d264ddbb26f',
-    //         },
-    //         mode: 'cors',
-    //         body: fd
-    //     });
-    //
-    //     return promise;
-    // }
-    //
-    // function localUploadImage(file: File, uploadLocalFuncPath: string, uploadLocalFuncSubPath: string) {
-    //     var fd = new FormData();
-    //     fd.append("image", file);
-    //     fd.append("path", uploadLocalFuncPath);
-    //     fd.append("subPath", uploadLocalFuncSubPath);
-    //
-    //     let promise = fetch('/api/markdown/upload/', {
-    //         method: 'POST',
-    //         mode: 'cors',
-    //         body: fd
-    //     });
-    //
-    //     return promise;
-    // }
 
     @Component
     export default class MarkdownEditor extends Vue {
